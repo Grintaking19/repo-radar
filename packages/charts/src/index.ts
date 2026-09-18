@@ -1,0 +1,1 @@
+export const CHARTS_PACKAGE = 'charts package linked';

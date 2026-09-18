@@ -2,6 +2,8 @@ import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
+import { UI_PACKAGE } from '@repo-radar/ui';
+import { CHARTS_PACKAGE } from '@repo-radar/charts';
 import './App.css'
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
+          <p>{UI_PACKAGE}</p>
+          <p>{CHARTS_PACKAGE}</p>
           <h1>Get started</h1>
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
