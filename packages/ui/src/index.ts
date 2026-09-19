@@ -1,1 +1,1 @@
-export const UI_PACKAGE = 'ui package linked';
+export {lightTheme, darkTheme} from './theme/theme.ts';
