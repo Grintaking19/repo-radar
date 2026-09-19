@@ -33,7 +33,7 @@ export interface GitHubCommit {
   commit: {
     author: {
       name: string;
-      data: string;
+      date: string;
     } | null;
   };
 }
@@ -63,9 +63,7 @@ export interface TrackedRepo {
 }
 
 export interface ApiError {
-    status: number;
-    message: string;
-    isRateLimitError?: boolean;
+  status: number;
+  message: string;
+  isRateLimitError?: boolean;
 }
-
-
