@@ -40,7 +40,7 @@ export default function SearchPage() {
           aria-label="Search results"
           sx={{ listStyle: "none", p: 0, mt: 2 }}
         >
-          {data.map((repo) => (
+          {data?.map((repo) => (
             <SearchResultItem
               key={repo.id}
               avatarUrl={repo.ownerAvatarUrl}

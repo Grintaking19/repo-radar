@@ -79,7 +79,7 @@ export function SearchResultItem({
           </Typography>
         )}
 
-        {topics.length > 0 && (
+        {topics?.length > 0 && (
           <Stack
             direction="row"
             spacing={0.5}
