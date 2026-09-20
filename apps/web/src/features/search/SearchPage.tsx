@@ -5,6 +5,7 @@ import { useDebounce } from "../../utils/useDebounce.ts";
 import { SearchBar } from "./SearchBar.tsx";
 import { SearchResultItem } from "./SearchResultItem.tsx";
 import { formatCount, formatRelative } from "../../utils/format.ts";
+import { TrackButton } from "../tracked/TrackButton.tsx";
 
 const MIN_QUERY_LENGTH = 3;
 
@@ -52,11 +53,7 @@ export default function SearchPage() {
               stars={formatCount(repo.stars)}
               updatedLabel={formatRelative(repo.pushedAt)}
               archived={repo.archived}
-              action={
-                <Button variant="outlined" size="small">
-                  Track
-                </Button>
-              }
+              action={<TrackButton repo={repo} />}
             />
           ))}
         </Box>
