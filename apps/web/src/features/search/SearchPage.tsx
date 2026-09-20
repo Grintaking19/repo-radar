@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Typography, CircularProgress, Button } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import { useSearchReposQuery } from "../../services/github/githubApi.ts";
 import { useDebounce } from "../../utils/useDebounce.ts";
 import { SearchBar } from "./SearchBar.tsx";
