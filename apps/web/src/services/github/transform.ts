@@ -12,7 +12,7 @@ export function toTrackedRepo(repo: GitHubRepo, commits?: GitHubCommit[]): Track
     url: repo.html_url,
     language: repo.language,
     license: repo.license?.spdx_id || null,
-    topics: repo.topics || [],
+    topics: repo.topics ?? [],
     stars: repo.stargazers_count,
     forks: repo.forks_count,
     openIssues: repo.open_issues_count,
