@@ -9,7 +9,7 @@ import { TrackButton } from "../tracked/TrackButton.tsx";
 
 const MIN_QUERY_LENGTH = 3;
 
-export default function SearchPage() {
+export function SearchPage() {
   console.log("SearchPage rendered");
   const [input, setInput] = useState("");
   const query = useDebounce(input, 700);
@@ -20,7 +20,7 @@ export default function SearchPage() {
   });
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
+    <>
       <SearchBar value={input} onChange={setInput} />
       {trimmed.length < MIN_QUERY_LENGTH && (
         <Typography variant="body1" sx={{ mt: 2 }}>
@@ -58,6 +58,6 @@ export default function SearchPage() {
           ))}
         </Box>
       )}
-    </Box>
+    </>
   );
 }
