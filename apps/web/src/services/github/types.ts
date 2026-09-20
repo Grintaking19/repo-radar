@@ -43,6 +43,7 @@ export interface TrackedRepo {
   fullName: string;
   name: string;
   owner: string;
+  ownerAvatarUrl: string;
   description: string | null;
   url: string;
   language: string | null;

@@ -7,6 +7,7 @@ export function toTrackedRepo(repo: GitHubRepo, commits?: GitHubCommit[]): Track
     fullName: repo.full_name,
     name: repo.name,
     owner: repo.owner.login,
+    ownerAvatarUrl: repo.owner.avatar_url,
     description: repo.description,
     url: repo.html_url,
     language: repo.language,
