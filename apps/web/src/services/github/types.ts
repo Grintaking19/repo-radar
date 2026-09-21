@@ -68,3 +68,14 @@ export interface ApiError {
   message: string;
   isRateLimitError?: boolean;
 }
+
+
+export type RepoSortField = "stars" | "forks" | "updated" ;
+
+export interface SearchReposArgs {
+  q: string;
+  sort?: RepoSortField;
+  order?: "asc" | "desc";
+  page: number;
+  perPage: number;
+}
