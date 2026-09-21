@@ -101,17 +101,15 @@ The summary (tiles and health) always describes **everything tracked**. Filters 
 ### How a tracked repo is loaded
 
 1. **Track** stores a snapshot (from the search result) in the `tracked` slice, keyed by `owner/name`. A store subscriber persists the slice to localStorage.
-2. Each `RepoCard` owns a `useGetTrackedRepoQuery(fullName)` subscription. Its `queryFn` fetches the repo and its latest commit. The commits endpoint returns 409 for empty repos, so a failed commit request degrades to "no commit date" instead of failing the card.
+2. Each `RepoCard` owns a `useGetTrackedRepoQuery(fullName)` subscription. Its `queryFn` fetches the repo and its latest commit (2 requests). The commits endpoint returns 409 for empty repos, so a failed commit request degrades to "no commit date" instead of failing the card.
 3. The card renders the snapshot immediately, then swaps in fresh data and writes it back as the new snapshot. Every chart and tile updates from that.
 4. **Refresh all** invalidates the `Repo` tag, and every mounted card refetches independently.
 
-GitHub responses are converted to a camelCase `TrackedRepo` domain type in one place (`services/github/transform.ts`), so components never touch the raw API shape.
 
 ## Decisions and trade-offs
 
-- **Latest commit instead of `pushed_at`.** `pushed_at` changes on a push to *any* branch, so a repo with only bot or feature-branch activity still looks alive. The latest default-branch commit is a more honest signal. The cost is one extra request per repo.
+- **Latest commit instead of `pushed_at`.** `pushed_at` changes on a push to *any* branch, so a repo with only bot or feature-branch activity still looks alive. Other option was to make extra request (More Github Tokens)
 
-- **One query per card instead of one batched request.** Loading, errors, retries and caching are isolated per repo. The cost is N×2 requests.
+- **One query per card.** Each repo has its own loading, error, retry and cache entry, so one failing repo never blocks the others and a single card can refresh on its own. The REST API needs two requests per repo (repo details and latest commit), so a full refresh costs N×2 requests. That's the same as fetching everything in one combined query, because REST can't batch. GitHub's GraphQL API could fetch all repos in one request, but it requires a token.
 
 - **Snapshots duplicate part of the RTK Query cache on purpose.** The RTK Query cache lives in memory. Snapshots give an instant dashboard on reload, keep cards useful during rate limiting, and let all dashboard analytics run client-side without extra requests.
-- **Keyed by `owner/name`.** It is readable and maps directly to API URLs, but a renamed or transferred repo would drift from its key.
