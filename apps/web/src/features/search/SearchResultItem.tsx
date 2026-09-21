@@ -1,5 +1,13 @@
 import type { ReactNode } from "react";
-import { Avatar, Box, Chip, Link, Stack, Typography } from "@mui/material";
+import {
+  alpha,
+  Avatar,
+  Box,
+  Chip,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { LanguageDot } from "@repo-radar/ui";
 
 export interface SearchResultItemProps {
@@ -9,6 +17,8 @@ export interface SearchResultItemProps {
   description: string | null;
   topics: string[];
   language: string | null;
+  forks?: string;
+  license?: string | null;
   stars: string;
   updatedLabel: string;
   archived?: boolean;
@@ -16,6 +26,8 @@ export interface SearchResultItemProps {
   /** Track / untrack button */
   action?: ReactNode;
 }
+
+const MAX_TOPICS = 5;
 
 export function SearchResultItem({
   avatarUrl,
@@ -25,10 +37,14 @@ export function SearchResultItem({
   topics,
   language,
   stars,
+  forks,
+  license,
   updatedLabel,
   archived,
   action,
 }: SearchResultItemProps) {
+  const showLicense = license && license !== "NOASSERTION";
+
   return (
     <Box
       component="li"
@@ -38,6 +54,7 @@ export function SearchResultItem({
         py: 2,
         borderBottom: "1px solid",
         borderColor: "divider",
+        "&:last-of-type": { borderBottom: 0 },
       }}
     >
       <Avatar
@@ -46,7 +63,7 @@ export function SearchResultItem({
         variant="rounded"
         sx={{ width: 40, height: 40, flexShrink: 0 }}
       />
-
+      {/* Link to the repository (Github itself) */}
       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
         <Stack direction="row" spacing={1} sx={{ mb: 0.5 }}>
           <Link
@@ -63,6 +80,7 @@ export function SearchResultItem({
           )}
         </Stack>
 
+        {/* Description of the repository */}
         {description && (
           <Typography
             variant="body2"
@@ -70,60 +88,61 @@ export function SearchResultItem({
             sx={{
               mb: 1,
               display: "-webkit-box",
-              webkitLineClamp: 2,
-              webkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              overflowWrap: "anywhere",
             }}
           >
             {description}
           </Typography>
         )}
 
+        {/* Topics of the repository (up to 5, similar to github) */}
         {topics?.length > 0 && (
           <Stack
             direction="row"
-            spacing={0.5}
+            useFlexGap
             sx={{ mb: 1, flexWrap: "wrap", gap: 0.5 }}
           >
-            {topics.map((topic) => (
+            {topics.slice(0, MAX_TOPICS).map((topic) => (
               <Chip
                 key={topic}
                 label={topic}
                 sx={{
-                  bgColor: "action.hover",
-                  color: "text.secondary",
                   height: 22,
+                  borderRadius: 11,
+                  fontSize: "0.75rem",
+                  color: "primary.main",
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
                 }}
               />
             ))}
           </Stack>
         )}
 
+        {/* Language, Stars, Updated */}
         <Stack
           direction="row"
-          spacing={2}
-          sx={{ flexWrap: "wrap", rowGap: 0.5, alignItems: "center" }}
+          useFlexGap
+          sx={{
+            flexWrap: "wrap",
+            columnGap: 2,
+            rowGap: 0.5,
+            alignItems: "center",
+            color: "text.secondary",
+          }}
         >
           {language && (
             <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
               <LanguageDot language={language} />
-              <Typography variant="caption" color="text.secondary">
-                {language}
-              </Typography>
+              <Typography variant="caption">{language}</Typography>
             </Stack>
           )}
-
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: "flex" }}
-          >
-            ★ {stars}
-          </Typography>
-
-          <Typography variant="caption" color="text.secondary">
-            Updated {updatedLabel}
-          </Typography>
+          <Typography variant="caption">★ {stars}</Typography>
+          {forks && <Typography variant="caption">⑂ {forks}</Typography>}
+          {showLicense && <Typography variant="caption">{license}</Typography>}
+          <Typography variant="caption">Updated {updatedLabel}</Typography>
         </Stack>
       </Box>
 
