@@ -31,3 +31,9 @@ export function formatRelative(isoDate: string): string {
     }
     return "just now";
 }
+
+export function formatDays(days: number | null): string {
+  if (days === null) return "—";
+  if (days <= 0) return "today";
+  return days === 1 ? "1 day" : `${days.toLocaleString("en")} days`;
+}
