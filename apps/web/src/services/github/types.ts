@@ -60,7 +60,7 @@ export interface TrackedRepo {
   lastCommitAt: string | null;
 
   /** Timestamp of when the repo was last fetched from GitHub */
-  fetchedAt: string;
+  fetchedAt: number;
 }
 
 export interface ApiError {

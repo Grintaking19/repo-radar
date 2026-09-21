@@ -1,30 +1,36 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
-import { selectTrackedRepos } from "../tracked/selectors";
-
+import { selectTrackedIds } from "../tracked/selectors";
+import { RepoCard } from "./RepoCard";
 
 export function DashboardPage() {
-    const repos = useAppSelector(selectTrackedRepos);
-    return (
-        <>
-        <Typography variant="h1" sx={{ mb:3 }}>
-            Tracked Repositories
+  //   const repos = useAppSelector(selectTrackedRepos);
+  const ids = useAppSelector(selectTrackedIds);
+  return (
+    <Box>
+      {ids.length === 0 ? (
+        <Typography variant="body1" color="text.secondary">
+          You are not tracking any repositories yet. Use the search page to find
+          and track repositories.
         </Typography>
-        <Typography variant="body1">
-            {repos.length === 0
-                ? "You are not tracking any repositories yet."
-                : `You are tracking ${repos.length} repositories.`}
-        </Typography>
-        {repos.length > 0 && (
-            <ul>
-                {repos.map((repo) => (
-                    <li key={repo.id}>
-                        {repo.fullName
-                        } - {repo.description}
-                    </li>
-                ))}
-            </ul>
-        )}
-        </>
-    );
+      ) : (
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "1fr 1fr",
+              md: "repeat(3, 1fr)",
+              //   lg: "repeat(4, 1fr)",
+            },
+          }}
+        >
+          {ids.map((id) => (
+            <RepoCard key={id} fullName={id} />
+          ))}
+        </Box>
+      )}
+    </Box>
+  );
 }

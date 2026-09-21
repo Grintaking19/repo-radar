@@ -1,7 +1,9 @@
-import type {GitHubRepo, GitHubCommit, TrackedRepo} from './types'
+import type { GitHubRepo, GitHubCommit, TrackedRepo } from "./types";
 
-
-export function toTrackedRepo(repo: GitHubRepo, commits?: GitHubCommit[]): TrackedRepo {
+export function toTrackedRepo(
+  repo: GitHubRepo,
+  commits?: GitHubCommit[],
+): TrackedRepo {
   return {
     id: repo.id,
     fullName: repo.full_name,
@@ -20,6 +22,6 @@ export function toTrackedRepo(repo: GitHubRepo, commits?: GitHubCommit[]): Track
     createdAt: repo.created_at,
     pushedAt: repo.pushed_at,
     lastCommitAt: commits?.[0]?.commit.author?.date || null,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: Date.now(),
   };
 }
