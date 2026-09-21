@@ -3,6 +3,7 @@ import { useAppSelector } from "../../app/hooks";
 import { selectTrackedIds } from "../tracked/selectors";
 import { RepoCard } from "./RepoCard";
 import { RefreshAllButton } from "./RefreshAllButton";
+import { StarsChartContainer } from "./StarsChartContainer";
 
 export function DashboardPage() {
   //   const repos = useAppSelector(selectTrackedRepos);
@@ -10,6 +11,7 @@ export function DashboardPage() {
   return (
     <Box>
       <RefreshAllButton />
+      <StarsChartContainer />
       {ids.length === 0 ? (
         <Typography variant="body1" color="text.secondary">
           You are not tracking any repositories yet. Use the search page to find

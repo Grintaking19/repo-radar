@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
 // Connect React Lifecycle with ECharts (Create instance of ECharts, set options, resize on window resize, dispose on unmount)
-export function useECharts(options: echarts.EChartsOption, theme?: string) {
+export function useEChart(options: echarts.EChartsOption, theme?: string) {
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<echarts.ECharts | null>(null);
 

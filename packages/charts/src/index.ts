@@ -1,1 +1,2 @@
-export const CHARTS_PACKAGE = 'charts package linked';
+export { StarsBarChart } from "./StarsBarChart";
+export { useEChart } from "./useECharts";
