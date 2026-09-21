@@ -9,7 +9,7 @@ export function DashboardPage() {
   //   const repos = useAppSelector(selectTrackedRepos);
   const ids = useAppSelector(selectTrackedIds);
   return (
-    <Box>
+    <Box sx={{ px: 2, py: 1, display: "flex", flexDirection: "column", gap: 2 }}>
       <RefreshAllButton />
       <StarsChartContainer />
       {ids.length === 0 ? (
@@ -21,7 +21,8 @@ export function DashboardPage() {
         <Box
           sx={{
             display: "grid",
-            gap: 2,
+            mt: 2,
+            gap: 4,
             gridTemplateColumns: {
               xs: "1fr",
               sm: "1fr 1fr",

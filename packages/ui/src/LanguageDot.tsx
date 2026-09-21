@@ -13,7 +13,7 @@ const COLORS: Record<string, string> = {
   PHP: "#777BB4",
   Swift: "#FA7343",
   Kotlin: "#A97BFF",
-  Rust: "#000000",
+  Rust: "#DEA584",
   Dart: "#0175C2",
   Scala: "#DC322F",
   Haskell: "#5E5086",

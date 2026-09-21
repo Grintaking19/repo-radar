@@ -41,7 +41,7 @@ export function StarsBarChart({
       },
       yAxis: {
         type: "category" as const,
-        data: data.map((d) => d.name),
+        data: data.map((d) => d.name.length > 20 ? `${d.name.slice(0, 20)}...` : d.name ), // Handle the case where the name is too long
         axisLabel: {
           color: theme.palette.text.secondary,
         },

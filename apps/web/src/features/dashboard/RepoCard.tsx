@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useGetTrackedRepoQuery } from "../../services/github/githubApi";
-import { selectTrackedSnapshots } from "../tracked/selectors";
 import { repoSnapshotUpdated, repoUntracked } from "../tracked/trackedSlice";
 import { RepoCardSkeleton } from "./RepoCardSkeleton";
 import { RepoCardError } from "./RepoCardError";
@@ -26,7 +25,7 @@ import { formatCount, formatRelative } from "../../utils/format";
 
 export function RepoCard({ fullName }: { fullName: string }) {
   const dispatch = useAppDispatch();
-  const snapshots = useAppSelector(selectTrackedSnapshots)[fullName];
+  const snapshots = useAppSelector((s) => s.tracked.snapshots[fullName])
 
   const { data, isFetching, isError, error, refetch } =
     useGetTrackedRepoQuery(fullName);
@@ -71,12 +70,12 @@ export function RepoCard({ fullName }: { fullName: string }) {
   return (
     <Card sx={{ opacity: isFetching ? 0.5 : 1, transition: "opacity 0.3s" }}>
       <CardContent>
-        <Stack>
+        <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.5, gap: 1 }}>
           <Link
             href={repo.url}
             target="_blank"
             rel="noopener noreferrer"
-            variant="subtitle2"
+            variant="h2"
             underline="hover"
             noWrap
             sx={{ minWidth: 0 }}

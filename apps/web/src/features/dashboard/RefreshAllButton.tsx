@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectTrackedIds } from "../tracked/selectors";
 import { githubApi } from "../../services/github/githubApi";
+import { QueryStatus } from "@reduxjs/toolkit/query";
 
 export function RefreshAllButton() {
   const dispatch = useAppDispatch();
@@ -9,7 +10,9 @@ export function RefreshAllButton() {
 
   const anyFetching = useAppSelector((state) =>
     ids.some(
-      (id) => githubApi.endpoints.getTrackedRepo.select(id)(state)?.isLoading,
+      (id) =>
+        githubApi.endpoints.getTrackedRepo.select(id)(state)?.status ===
+        QueryStatus.pending,
     ),
   );
 

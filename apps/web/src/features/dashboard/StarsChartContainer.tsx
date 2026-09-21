@@ -11,7 +11,7 @@ export function StarsChartContainer() {
       [...repos]
         .sort((a, b) => b.stars - a.stars)
         .map((repo) => ({
-          name: repo.name,
+          name: repo.fullName,
           value: repo.stars,
         })),
     [repos],
