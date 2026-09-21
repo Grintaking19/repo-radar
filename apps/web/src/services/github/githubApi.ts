@@ -4,6 +4,8 @@ import type {
   GitHubSearchResponse,
   TrackedRepo,
   GitHubCommit,
+  SearchReposArgs,
+  SearchReposResult,
 } from "./types";
 import { toTrackedRepo } from "./transform";
 
@@ -20,13 +22,16 @@ export const githubApi = createApi({
   refetchOnFocus: false,
   refetchOnReconnect: false,
   endpoints: (builder) => ({
-    searchRepos: builder.query<TrackedRepo[], string>({
-      query: (q) => ({
+    searchRepos: builder.query<SearchReposResult, SearchReposArgs>({
+      query: ({ q, sort, order, page, perPage }) => ({
         url: "search/repositories",
-        params: { q, per_page: 10 },
+        // fetchBaseQuery drops undefined params
+        params: { q, sort, order, page, per_page: perPage },
       }),
-      transformResponse: (response: GitHubSearchResponse) =>
-        response.items.map((repo) => toTrackedRepo(repo)),
+      transformResponse: (response: GitHubSearchResponse) => ({
+        totalCount: response.total_count,
+        items: response.items.map((repo) => toTrackedRepo(repo)),
+      }),
     }),
     getTrackedRepo: builder.query<TrackedRepo, string>({
       async queryFn(fullName, _queryApi, _extraOptions, baseQuery) {

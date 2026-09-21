@@ -79,3 +79,8 @@ export interface SearchReposArgs {
   page: number;
   perPage: number;
 }
+
+export interface SearchReposResult {
+  totalCount: number;
+  items: TrackedRepo[];
+}

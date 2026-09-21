@@ -31,7 +31,7 @@ export function SearchFiltersBar({
     <Stack
       direction="row"
       useFlexGap
-      sx={{ flexWrap: "wrap", gap: 1, alignItems: "center" }}
+      sx={{ flexWrap: "wrap", gap: 2, alignItems: "center" }}
     >
       {/* Language Filter */}
       <TextField
@@ -85,6 +85,7 @@ export function SearchFiltersBar({
       {/* Hide archived Button */}
       <FormControlLabel
         label="Hide archived"
+        sx={{ ml: "auto" }}
         control={
           <Switch
             size="small"

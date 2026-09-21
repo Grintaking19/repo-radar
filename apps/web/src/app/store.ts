@@ -4,11 +4,14 @@ import { githubApi } from "../services/github/githubApi";
 import trackedReducer from "../features/tracked/trackedSlice";
 import { saveTracked, saveColorMode} from "../utils/storage";
 import themeReducer from "../features/theme/themeSlice";
+import searchReducer from "../features/search/searchSlice";
+
 
 export const store = configureStore({
   reducer: {
     tracked: trackedReducer,
     theme: themeReducer,
+    search: searchReducer,
     [githubApi.reducerPath]: githubApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
