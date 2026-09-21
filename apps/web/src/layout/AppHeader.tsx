@@ -2,11 +2,12 @@ import { AppBar, Badge, Box, Button, Toolbar, Typography } from "@mui/material";
 import { NavLink, Link as RouterLink } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectTrackedCount } from "../features/tracked/selectors.ts";
+import { selectLastSearch } from "../features/search/searchSlice.ts";
 import { ColorModeToggle } from "../features/theme/ColorModeToggle.tsx";
 
 export function AppHeader() {
   const count = useAppSelector(selectTrackedCount);
-  //   const { pathname } = useLocation();
+  const lastSearch = useAppSelector(selectLastSearch);
 
   return (
     <AppBar
@@ -30,9 +31,11 @@ export function AppHeader() {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
+          {/* Restores the last search (query, filters, page) when coming back from another page */}
           <Button
             component={NavLink}
-            to="/"
+            to={{ pathname: "/", search: lastSearch ? `?${lastSearch}` : "" }}
+            end
             sx={{ "&.active": { color: "primary.main", fontWeight: 600 } }}
           >
             Search
