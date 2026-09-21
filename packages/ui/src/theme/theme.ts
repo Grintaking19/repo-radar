@@ -1,4 +1,4 @@
-import { createTheme, type ThemeOptions } from '@mui/material';
+import { createTheme, type ThemeOptions } from "@mui/material";
 
 const shared: ThemeOptions = {
   shape: { borderRadius: 10 },
@@ -17,6 +17,9 @@ const shared: ThemeOptions = {
       defaultProps: { disableElevation: true },
       styleOverrides: { root: { textTransform: "none", fontWeight: 500 } },
     },
+    MuiPaper: {
+      styleOverrides: { root: { backgroundImage: "none" } },
+    },
     MuiCard: {
       defaultProps: { elevation: 0 },
       styleOverrides: { root: { border: "1px solid", borderColor: "divider" } },
@@ -28,6 +31,9 @@ const shared: ThemeOptions = {
     MuiTextField: {
       defaultProps: { size: "small" },
     },
+    MuiTooltip: {
+      defaultProps: { arrow: true },
+    },
   },
 };
 
@@ -35,12 +41,14 @@ export const lightTheme = createTheme({
   ...shared,
   palette: {
     mode: "light",
-    primary: { main: "#4F46E5" },
-    background: { default: "#FAFAFA", paper: "#FFFFFF" },
-    success: { main: "#15803D" },
-    warning: { main: "#B45309" },
-    error: { main: "#B91C1C" },
-    divider: "#E5E7EB",
+    primary: { main: "#0969DA" },
+    secondary: { main: "#1F883D" },
+    background: { default: "#F6F8FA", paper: "#FFFFFF" },
+    text: { primary: "#1F2328", secondary: "#59636E" },
+    success: { main: "#1A7F37" },
+    warning: { main: "#9A6700" },
+    error: { main: "#D1242F" },
+    divider: "#D1D9E0",
   },
 });
 
@@ -48,11 +56,13 @@ export const darkTheme = createTheme({
   ...shared,
   palette: {
     mode: "dark",
-    primary: { main: "#818CF8" },
-    background: { default: "#0D1117", paper: "#161B22" },
+    primary: { main: "#4493F8" },
+    secondary: { main: "#238636" },
+    background: { default: "#0D1117", paper: "#151B23" },
+    text: { primary: "#F0F6FC", secondary: "#9198A1" },
     success: { main: "#3FB950" },
     warning: { main: "#D29922" },
     error: { main: "#F85149" },
-    divider: "#30363D",
+    divider: "#3D444D",
   },
 });
