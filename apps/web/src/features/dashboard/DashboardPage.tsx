@@ -2,12 +2,14 @@ import { Box, Typography } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
 import { selectTrackedIds } from "../tracked/selectors";
 import { RepoCard } from "./RepoCard";
+import { RefreshAllButton } from "./RefreshAllButton";
 
 export function DashboardPage() {
   //   const repos = useAppSelector(selectTrackedRepos);
   const ids = useAppSelector(selectTrackedIds);
   return (
     <Box>
+      <RefreshAllButton />
       {ids.length === 0 ? (
         <Typography variant="body1" color="text.secondary">
           You are not tracking any repositories yet. Use the search page to find
