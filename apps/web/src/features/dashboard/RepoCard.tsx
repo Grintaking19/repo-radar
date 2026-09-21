@@ -20,12 +20,14 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { RefreshCwIcon } from "lucide-react";
+import { RefreshCwIcon, X } from "lucide-react";
+import { LanguageDot } from "@repo-radar/ui";
+import { describeApiError } from "../../services/github/errors";
 import { formatCount, formatRelative } from "../../utils/format";
 
 export function RepoCard({ fullName }: { fullName: string }) {
   const dispatch = useAppDispatch();
-  const snapshots = useAppSelector((s) => s.tracked.snapshots[fullName])
+  const snapshot = useAppSelector((s) => s.tracked.snapshots[fullName]);
 
   const { data, isFetching, isError, error, refetch } =
     useGetTrackedRepoQuery(fullName);
@@ -37,24 +39,17 @@ export function RepoCard({ fullName }: { fullName: string }) {
     }
   }, [data, dispatch]);
 
-  const repo = data ?? snapshots;
+  const repo = data ?? snapshot;
 
   if (!repo && isFetching) {
     return <RepoCardSkeleton />;
   }
 
   if (!repo && isError) {
-    const status = (error as { status?: number })?.status;
     return (
       <RepoCardError
         fullName={fullName}
-        message={
-          status === 403 || status === 429
-            ? "API rate limit exceeded. Please try again later."
-            : status === 404
-              ? "Repository not found."
-              : "Could not fetch repository data. Please try again later."
-        }
+        message={describeApiError(error)}
         onRetry={refetch}
         onUntrack={() => dispatch(repoUntracked(fullName))}
       />
@@ -68,14 +63,17 @@ export function RepoCard({ fullName }: { fullName: string }) {
   const status = getActivityStatus(repo.lastCommitAt, repo.archived);
 
   return (
-    <Card sx={{ opacity: isFetching ? 0.5 : 1, transition: "opacity 0.3s" }}>
+    <Card
+      sx={{ height: "100%", opacity: isFetching ? 0.6 : 1, transition: "opacity 0.3s" }}
+      aria-busy={isFetching}
+    >
       <CardContent>
         <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.5, gap: 1 }}>
           <Link
             href={repo.url}
             target="_blank"
             rel="noopener noreferrer"
-            variant="h2"
+            variant="subtitle1"
             underline="hover"
             noWrap
             sx={{ minWidth: 0 }}
@@ -96,7 +94,7 @@ export function RepoCard({ fullName }: { fullName: string }) {
               onClick={() => dispatch(repoUntracked(repo.fullName))}
               aria-label={`Untrack ${repo.fullName}`}
             >
-              ✕
+              <X size={16} />
             </IconButton>
           </Stack>
         </Stack>
@@ -111,25 +109,37 @@ export function RepoCard({ fullName }: { fullName: string }) {
             color={ACTIVITY_COLOR[status]}
             variant="outlined"
           />
-          {repo.archived && (
-            <Chip
-              label="Archived"
-              color={ACTIVITY_COLOR["archived"]}
-              variant="outlined"
-            />
-          )}
           {repo.license && (
             <Chip label={repo.license} color="default" variant="outlined" />
           )}
         </Stack>
 
         {repo.description && (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mb: 1.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              overflowWrap: "anywhere",
+            }}
+          >
             {repo.description}
           </Typography>
         )}
 
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.5 }}>
+          {repo.language && (
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", gridColumn: "1 / -1" }}>
+              <LanguageDot language={repo.language} />
+              <Typography variant="caption" color="text.secondary">
+                {repo.language}
+              </Typography>
+            </Stack>
+          )}
           <Typography variant="caption" color="text.secondary">
             ★ {formatCount(repo.stars)}
           </Typography>

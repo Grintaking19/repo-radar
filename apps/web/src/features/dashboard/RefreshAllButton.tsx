@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectTrackedIds } from "../tracked/selectors";
 import { githubApi } from "../../services/github/githubApi";
 import { QueryStatus } from "@reduxjs/toolkit/query";
+import { RefreshCw } from "lucide-react";
 
 export function RefreshAllButton() {
   const dispatch = useAppDispatch();
@@ -21,11 +22,12 @@ export function RefreshAllButton() {
       size="small"
       variant="outlined"
       disabled={anyFetching || ids.length === 0}
+      startIcon={<RefreshCw size={16} />}
       onClick={() => {
         dispatch(githubApi.util.invalidateTags(["Repo"]));
       }}
     >
-      {anyFetching ? "Refreshing..." : "Refresh All"}
+      {anyFetching ? "Refreshing…" : "Refresh all"}
     </Button>
   );
 }

@@ -6,6 +6,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { X } from "lucide-react";
 
 interface Props {
   fullName: string;
@@ -22,7 +23,7 @@ export function RepoCardError({
 }: Props) {
   return (
     <Card
-      sx={{ borderColor: "error.main", borderWidth: 1, borderStyle: "solid" }}
+      sx={{ height: "100%", borderColor: "error.main", borderWidth: 1, borderStyle: "solid" }}
     >
       <CardContent>
         <Stack
@@ -37,7 +38,7 @@ export function RepoCardError({
             aria-label={`Untrack ${fullName}`}
             onClick={onUntrack}
           >
-            ✕
+            <X size={16} />
           </IconButton>
         </Stack>
         <Typography variant="body2" color="error" sx={{ my: 1.5 }}>
