@@ -1,6 +1,8 @@
 import type { TrackedState } from "../features/tracked/trackedSlice";
+import type { PaletteMode } from "@mui/material";
 
-const KEY = "repo-radar:tracked-repos:v1";
+const TRACKED_KEY = "repo-radar:tracked-repos:v1";
+const COLOR_MODE_KEY = "repo-radar:color-mode:v1";
 
 export function loadTracked(): TrackedState | null {
   try {
@@ -10,7 +12,7 @@ export function loadTracked(): TrackedState | null {
       return null;
     }
     // Check if the data exists in localStorage
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(TRACKED_KEY);
     if (!raw) {
       return null;
     }
@@ -35,8 +37,34 @@ export function saveTracked(state: TrackedState): void {
       return;
     }
     // Check if the state is valid
-    localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.setItem(TRACKED_KEY, JSON.stringify(state));
   } catch (error) {
     console.error("Failed to save tracked repos to localStorage", error);
+  }
+}
+
+export function loadColorMode(): PaletteMode {
+  try {
+    const saved = localStorage.getItem(COLOR_MODE_KEY);
+    if (saved === "light" || saved === "dark") {
+      return saved;
+    }
+  } catch {
+    // Default to OS preference
+  }
+  if (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  }
+  return "light";
+}
+
+export function saveColorMode(mode: PaletteMode): void {
+  try {
+    localStorage.setItem(COLOR_MODE_KEY, mode);
+  } catch {
+    // Ignore errors (mode won't persist, no big deal)
   }
 }

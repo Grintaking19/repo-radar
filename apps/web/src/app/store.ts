@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { githubApi } from "../services/github/githubApi";
 import trackedReducer from "../features/tracked/trackedSlice";
-import { saveTracked } from "../utils/storage";
+import { saveTracked, saveColorMode} from "../utils/storage";
+import themeReducer from "../features/theme/themeSlice";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     tracked: trackedReducer,
+    theme: themeReducer,
     [githubApi.reducerPath]: githubApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -15,12 +17,16 @@ export const store = configureStore({
 
 setupListeners(store.dispatch);
 
-let lastTrackedState = store.getState().tracked;
+let {tracked: lastTracked, theme: lastTheme} = store.getState()
 store.subscribe(() => {
-  const currentTrackedState = store.getState().tracked;
-  if (currentTrackedState !== lastTrackedState) {
-    lastTrackedState = currentTrackedState;
-    saveTracked(currentTrackedState);
+  const {tracked, theme} = store.getState();
+  if (tracked !== lastTracked) {
+    lastTracked = tracked;
+    saveTracked(tracked);
+  }
+  if (theme.colorMode !== lastTheme.colorMode) {
+    lastTheme = theme;
+    saveColorMode(theme.colorMode);
   }
 });
 
