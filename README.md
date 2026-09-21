@@ -1,75 +1,117 @@
-# React + TypeScript + Vite
+# Repo Radar
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Keep an eye on the open-source repositories you depend on. Search GitHub, track the repos that matter to you, and see at a glance which ones are active, which are slowing down, and which have gone stale.
 
-Currently, two official plugins are available:
+**Live demo:**  https://repo-radar-web.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+### Search
+- Debounced search of GitHub repositories (starts at 3 characters)
+- Filters for **language**, **minimum stars**, **sort** (best match, stars, forks, recently updated) and **hide archived**
+- Pagination, capped at the 1,000 results GitHub's search API returns
+- The query, filters and page live in the **URL**, so a search can be shared and survives a reload. Coming back from the Tracked page restores it, and results cached in the last 5 minutes are not refetched
+- Skeleton loading, empty states, and readable errors (rate limit, network) with Retry
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Tracked repositories
+- **Track and untrack** from search results. The list persists across reloads (localStorage)
+- **Summary**: repos tracked, how many need attention (stale or archived), total stars, and median time since the last commit
+- **Health** donut by activity status, plus a short list of the repos that have been idle the longest. Clicking a slice filters the grid by that status
+- **Compare** chart: top 10 repos by stars, forks, open issues, or days since the last commit (colored by status)
+- **Filter and sort** the grid by text (name, description, topics), status, and language. Sort by recently tracked, stars, latest commit, or name. These filters live in the URL too
+- **Instant first paint**: cards render from a stored snapshot, then refresh from GitHub in the background
+- **Per-card loading**: each card has its own skeleton, error state with Retry, and refresh button. One failing repo never blocks the others
+- **Refresh all** in one click
 
-## Expanding the ESLint configuration
+### General
+- Light and dark themes with a GitHub (Primer) palette. The OS preference is the default and your choice is persisted
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Activity status
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Status is based on the date of the **latest commit on the default branch**:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Status   | Rule                         |
+| -------- | ---------------------------- |
+| Active   | last commit < 30 days ago    |
+| Slowing  | 30–179 days                  |
+| Stale    | ≥ 180 days                   |
+| Archived | archived on GitHub           |
+| Unknown  | commit date unavailable      |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting started
 
+Requirements: Node 22 LTS and pnpm 9 or newer.
+
+```bash
+pnpm install
+pnpm dev                  # apps/web at http://localhost:5173
+pnpm build                # type-check + production build of apps/web
+pnpm --filter web lint
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+No environment variables are needed. The app calls the public GitHub REST API without authentication.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Tech stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+React 19 - TypeScript - Vite - Redux Toolkit + RTK Query - React Router - MUI - ECharts - pnpm workspaces - Vercel
+
+## Project structure
 
 ```
+apps/
+  web/                        # the application
+    src/
+      app/                    # store, typed hooks, theme provider
+      layout/                 # AppLayout, AppHeader
+      features/
+        search/               # page, filters (URL <-> state), buildQuery, result list
+        tracked/              # tracked slice, base selectors, TrackButton
+        dashboard/            # tracked page: tiles, health, compare, filters, repo cards
+        theme/                # color-mode slice and toggle
+      services/github/        # RTK Query API, raw types, response -> domain transform, error copy
+      utils/                  # formatting, activity metrics, storage, useDebounce
+packages/
+  ui/                         # MUI theme and presentational components (StatTile, LanguageDot, Logo)
+  charts/                     # presentational ECharts components (DonutChart, RankedBarChart)
+```
+
+## Architecture
+
+### Where state lives
+
+| Kind of state | Where | Examples |
+| --- | --- | --- |
+| Server state | RTK Query (`githubApi`) | search results, fresh repo data |
+| Client state | Redux slices | tracked ids + snapshots, color mode, last search |
+| URL state | `useSearchParams` | search query, filters and page; dashboard filters |
+| Derived state | memoized selectors over pure functions | insights, summary, visible repos, chart data |
+
+Filters are kept in the URL, not in Redux. The URL is the one piece of state users can see, share and bookmark, and it keeps the back button honest. Redux only remembers the last search string so the nav link can restore it.
+
+### Package boundaries
+
+`packages/*` hold **presentational code only**. They take plain props, never import Redux or the API layer, and know nothing about GitHub. Containers in `apps/web/src/features/*` select and shape the data. For example, `CompareChartCard` ranks tracked repos by the chosen metric, and `RankedBarChart` only draws bars.
+
+### Derived data
+
+`features/dashboard/insights.ts` holds pure functions: `toInsights` (adds status and idle days), `summarize`, and `applyTrackedFilters`. `selectors.ts` wraps them in `createSelector`, so they recompute only when snapshots or filters change, and they are easy to unit test.
+
+The summary (tiles and health) always describes **everything tracked**. Filters narrow only the repository grid, so the overview never changes under you while you search for one repo.
+
+### How a tracked repo is loaded
+
+1. **Track** stores a snapshot (from the search result) in the `tracked` slice, keyed by `owner/name`. A store subscriber persists the slice to localStorage.
+2. Each `RepoCard` owns a `useGetTrackedRepoQuery(fullName)` subscription. Its `queryFn` fetches the repo and its latest commit. The commits endpoint returns 409 for empty repos, so a failed commit request degrades to "no commit date" instead of failing the card.
+3. The card renders the snapshot immediately, then swaps in fresh data and writes it back as the new snapshot. Every chart and tile updates from that.
+4. **Refresh all** invalidates the `Repo` tag, and every mounted card refetches independently.
+
+GitHub responses are converted to a camelCase `TrackedRepo` domain type in one place (`services/github/transform.ts`), so components never touch the raw API shape.
+
+## Decisions and trade-offs
+
+- **Latest commit instead of `pushed_at`.** `pushed_at` changes on a push to *any* branch, so a repo with only bot or feature-branch activity still looks alive. The latest default-branch commit is a more honest signal. The cost is one extra request per repo.
+
+- **One query per card instead of one batched request.** Loading, errors, retries and caching are isolated per repo. The cost is N×2 requests.
+
+- **Snapshots duplicate part of the RTK Query cache on purpose.** The RTK Query cache lives in memory. Snapshots give an instant dashboard on reload, keep cards useful during rate limiting, and let all dashboard analytics run client-side without extra requests.
+- **Keyed by `owner/name`.** It is readable and maps directly to API URLs, but a renamed or transferred repo would drift from its key.
