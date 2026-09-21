@@ -2,6 +2,7 @@ import { AppBar, Badge, Box, Button, Toolbar, Typography } from "@mui/material";
 import { NavLink, Link as RouterLink } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectTrackedCount } from "../features/tracked/selectors.ts";
+import { ColorModeToggle } from "../features/theme/ColorModeToggle.tsx";
 
 export function AppHeader() {
   const count = useAppSelector(selectTrackedCount);
@@ -46,6 +47,8 @@ export function AppHeader() {
             </Badge>
           </Button>
         </Box>
+        <Box sx={{ flexGrow: 1 }} />
+        <ColorModeToggle />
       </Toolbar>
     </AppBar>
   );

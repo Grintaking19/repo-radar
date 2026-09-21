@@ -5,7 +5,7 @@ import trackedReducer from "../features/tracked/trackedSlice";
 import { saveTracked, saveColorMode} from "../utils/storage";
 import themeReducer from "../features/theme/themeSlice";
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     tracked: trackedReducer,
     theme: themeReducer,
