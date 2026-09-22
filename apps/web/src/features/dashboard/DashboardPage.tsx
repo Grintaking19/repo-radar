@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "../../app/hooks";
 import { formatRelative } from "../../utils/format";
-import type { ActivityStatus } from "../../utils/metrics";
+import type { ActivityStatus } from "./metrics";
 import { CompareChartCard } from "./CompareChartCard";
 import { EmptyTracked } from "./EmptyTracked";
 import { HealthCard } from "./HealthCard";

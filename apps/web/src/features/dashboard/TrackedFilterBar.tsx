@@ -13,7 +13,7 @@ import {
   ACTIVITY_LABEL,
   ACTIVITY_ORDER,
   type ActivityStatus,
-} from "../../utils/metrics";
+} from "./metrics";
 import {
   TRACKED_SORT_OPTIONS,
   hasActiveTrackedFilters,

@@ -1,4 +1,4 @@
-import { ACTIVITY_ORDER, type ActivityStatus } from "../../utils/metrics";
+import { ACTIVITY_ORDER, type ActivityStatus } from "./metrics";
 
 export type TrackedSort = "recent" | "stars" | "last-commit" | "name";
 

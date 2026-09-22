@@ -16,7 +16,7 @@ import {
   ACTIVITY_ORDER,
   ACTIVITY_RULE,
   type ActivityStatus,
-} from "../../utils/metrics";
+} from "./metrics";
 import type { TrackedSummary } from "./insights";
 import { useStatusColors } from "./useStatusColors";
 

@@ -8,7 +8,7 @@ import {
   ACTIVITY_COLOR,
   ACTIVITY_LABEL,
   getActivityStatus,
-} from "../../utils/metrics";
+} from "./metrics";
 import {
   Box,
   Card,

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTheme } from "@mui/material";
-import type { ActivityStatus } from "../../utils/metrics";
+import type { ActivityStatus } from "./metrics";
  
 /** Resolves each activity status to a concrete theme color (charts need hex values). */
 export function useStatusColors(): Record<ActivityStatus, string> {

@@ -4,7 +4,7 @@ import {
   daysSince,
   getActivityStatus,
   type ActivityStatus,
-} from "../../utils/metrics";
+} from "./metrics";
 import type { TrackedFilters } from "./filters";
 
 /**
