@@ -56,6 +56,15 @@ No environment variables are needed. The app calls the public GitHub REST API wi
 React 19 - TypeScript - Vite - Redux Toolkit + RTK Query - React Router - MUI - ECharts - pnpm workspaces - Vercel
 
 ## Project structure
+The project's structure is a monorepo feature-based, you will it's divided into 2 main repos:
+  1. `apps/web`: This for the core logic of the website, it's ***Feature-based**. Everything related to a certain feature is grouped in the same folder.
+  2. `packages`: hold **presentational code only**,They take plain props, never import Redux or the API layer, and know nothing about GitHub. Containers in `apps/web/src/features/*` select and shape the data. It's divided into 2 main sections:
+    - `packages/ui/*`: focuses on pure UI components derived from MUI.
+    - `packages/charts/*`: focues on Echarts components.
+
+This allows for reusing 2 things: 
+  1. **Princple of least previlage**: every folder and component has only the data it needs.
+  2. **Reusability of `packages`' components**: There are clear decoupling of purely presentational code.
 
 ```
 apps/
@@ -77,6 +86,13 @@ packages/
 
 ## Architecture
 
+Every kind of state has exactly one owner, and everything else is derived from it. Redux is the single source of truth for app state: components read it through selectors and change it only by dispatching actions. They never call `fetch` or touch localStorage directly.
+
+- **Server state: RTK Query.** Requests are cached by endpoint and arguments, shared between components, and kept for 5 minutes after their last use. GitHub responses are converted to a typed domain model in one place (`services/github/transform.ts`).
+- **Client state: Redux slices.** The tracked repos and the color mode are persisted. They load from localStorage once at startup, and a store subscriber writes back only the slices that changed. localStorage is a backup for reloads, not live state. The API cache is never persisted.
+- **URL state: filters.** The search query, filters and page, plus the dashboard filters, live in the URL, so they can be shared and bookmarked and the back button works. Redux only remembers the last search string so the nav link can restore it.
+- **Derived state: memoized selectors.** Status, summaries and chart data are never stored. They are computed from pure, testable functions.
+
 ### Where state lives
 
 | Kind of state | Where | Examples |
@@ -86,24 +102,21 @@ packages/
 | URL state | `useSearchParams` | search query, filters and page; dashboard filters |
 | Derived state | memoized selectors over pure functions | insights, summary, visible repos, chart data |
 
-Filters are kept in the URL, not in Redux. The URL is the one piece of state users can see, share and bookmark, and it keeps the back button honest. Redux only remembers the last search string so the nav link can restore it.
-
 ### Package boundaries
 
-`packages/*` hold **presentational code only**. They take plain props, never import Redux or the API layer, and know nothing about GitHub. Containers in `apps/web/src/features/*` select and shape the data. For example, `CompareChartCard` ranks tracked repos by the chosen metric, and `RankedBarChart` only draws bars.
+`packages/*` hold **presentational code only**. They take plain props, never import Redux or the API layer, and know nothing about GitHub. Containers in `apps/web/src/features/*` select and shape the data. For example, `CompareChartCard` ranks tracked repos by the chosen metric, and `RankedBarChart` only draws the bars.
 
 ### Derived data
 
-`features/dashboard/insights.ts` holds pure functions: `toInsights` (adds status and idle days), `summarize`, and `applyTrackedFilters`. `selectors.ts` wraps them in `createSelector`, so they recompute only when snapshots or filters change, and they are easy to unit test.
+`features/dashboard/insights.ts` holds pure functions: `toInsights` (adds status and idle days), `summarize`, and `applyTrackedFilters`. `selectors.ts` wraps them in `createSelector`, so they recompute only when snapshots or filters change.
 
 The summary (tiles and health) always describes **everything tracked**. Filters narrow only the repository grid, so the overview never changes under you while you search for one repo.
 
 ### How a tracked repo is loaded
 
-1. **Track** stores a snapshot (from the search result) in the `tracked` slice, keyed by `owner/name`. A store subscriber persists the slice to localStorage.
-2. Each `RepoCard` owns a `useGetTrackedRepoQuery(fullName)` subscription. Its `queryFn` fetches the repo and its latest commit (2 requests). The commits endpoint returns 409 for empty repos, so a failed commit request degrades to "no commit date" instead of failing the card.
-3. The card renders the snapshot immediately, then swaps in fresh data and writes it back as the new snapshot. Every chart and tile updates from that.
-4. **Refresh all** invalidates the `Repo` tag, and every mounted card refetches independently.
+1. **Track** stores a snapshot of the search result in the `tracked` slice, keyed by `owner/name`, and persists it to localStorage.
+2. Each `RepoCard` shows its snapshot right away, then fetches the repo and its latest commit (2 requests) through its own `useGetTrackedRepoQuery`. The fresh result replaces the snapshot, which updates every chart and tile. Loading, errors and retries stay isolated per card. For an empty repo the commit request fails (409), so the card just shows no commit date.
+3. **Refresh all** invalidates the `Repo` tag, and every mounted card refetches independently.
 
 
 ## Decisions and trade-offs
